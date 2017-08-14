@@ -292,7 +292,7 @@ progress::-webkit-progress-bar-value {
     window.URL.revokeObjectURL(this.src);
   };
 
-  tree.$el.click(function(e) {
+  function handleView(e) {
     if (e.target.nodeName == 'A' && e.target.dataset['type'] == 'file') {
       var file = tree.fileList[e.target.dataset['index']];
 
@@ -323,7 +323,10 @@ progress::-webkit-progress-bar-value {
       //thumbnails.insertAdjacentHTML('afterBegin', tmpl('thumbnail_template', data));
       thumbnails.innerHTML = tmpl('thumbnail_template', data);
     }
-  });
+  }
+
+  tree.$el.click(function(e){handleView(e);});
+  tree.$el.keyup(function(e){if (e.keyCode !== 37 && e.keyCode !== 38 && e.keyCode !== 39 && e.keyCode !== 40) return; handleView(e);});
 </script>
 </body>
 </html>
