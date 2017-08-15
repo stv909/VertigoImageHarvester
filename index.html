@@ -55,7 +55,7 @@ html, body {
 }
 ::-webkit-scrollbar {
   width: 12px;
-  height: 36px;
+  height: 12px;
   background-color: #eee;
 }
 
@@ -147,6 +147,16 @@ progress {
 progress::-webkit-progress-bar-value {
   background-color: #99ccff;
 }
+
+.action_button {
+  border: 1px solid #000;
+  border-radius: 4px;
+  width: 32px;
+  height: 32px;
+  background-image: url(action_icons.png);
+  background-repeat-x: no-repeat;
+  background-repeat-y: no-repeat;
+}
 </style>
 </head>
 <body>
@@ -158,6 +168,14 @@ progress::-webkit-progress-bar-value {
   </div>
   <div class="center" id="thumbnails"></div>
 </div>
+
+  <div style="position: fixed; left: 0%; margin-left: 340px; top: 100%; margin-top: -40px; background-color: transparent;">
+    <button class="action_button" style="background-position-x: 0px;"></button>
+    <button class="action_button" style="background-position-x: -38px;"></button>
+    <button class="action_button" style="background-position-x: -74px;"></button>
+    <button class="action_button" style="background-position-x: -112px;"></button>
+    <button class="action_button" style="background-position-x: -148px;"></button>
+  </div>
 
 <script type="text/html" id="thumbnail_template">
   <div class="thumbnail">
