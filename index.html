@@ -108,9 +108,6 @@ input[type='file'] {
   -webkit-transition-timing-function: ease-in-out;
   opacity: 0;
 }
-.thumbnail:hover {
-  -webkit-transform: scale(1.5);
-}
 .thumbnail .image {
   border: 1px solid #ccc;
   padding: 10px;
@@ -296,12 +293,6 @@ progress::-webkit-progress-bar-value {
   var tree = new Tree('#dir-tree');
 
   $('#file_input').change(tree.init);
-
-  // Initial resize to force scrollbar in when file loads
-  $('#container div:first-of-type').css('height', (document.height - 20) + 'px');
-  window.addEventListener('resize', function(e) {
-    $('#container div:first-of-type').css('height', (e.target.innerHeight - 20) + 'px');
-  });
 
   function revokeFileURL(e) {
     var thumb = document.querySelector('.thumbnail');
