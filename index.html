@@ -88,7 +88,7 @@ input[type='file'] {
   border-right: 1px solid #ccc;
 }
 #container > div:last-of-type {
- overflow-y: auto;
+ overflow-y: hidden;
  overflow-x: hidden;
  -webkit-box-flex: 1;
 }
@@ -118,6 +118,11 @@ input[type='file'] {
 }
 #thumbnails img {
   width: 100%;
+  user-drag: none;
+  -webkit-user-drag: none;
+  position: relative;
+  left: 0px;
+  top: 0px;
 }
 .thumbnail .details {
   font-family: Helvetica, sans-serif;
@@ -214,6 +219,8 @@ progress::-webkit-progress-bar-value {
   window.URL = window.URL ? window.URL :
                window.webkitURL ? window.webkitURL : window;
   var actionTarget;
+  var dragInProgress = false;
+  var dragPriorPosition = {clientX: 0, clientY: 0};
 
   function Tree(selector) {
     this.$el = $(selector);
@@ -342,6 +349,23 @@ progress::-webkit-progress-bar-value {
       //thumbnails.insertAdjacentHTML('afterBegin', tmpl('thumbnail_template', data));
       thumbnails.innerHTML = tmpl('thumbnail_template', data);
       actionTarget = thumbnails.firstElementChild;
+
+      actionTarget.onmousedown = function(e) {
+        dragInProgress = true;
+        dragPriorPosition = {clientX: e.clientX, clientY: e.clientY};
+      };
+      document.addEventListener('mousemove', function(e) {
+        if (!dragInProgress || !actionTarget)
+          return;
+        var elemLeft = parseInt(actionTarget.firstElementChild.style.left);
+        var elemTop = parseInt(actionTarget.firstElementChild.style.top);
+        actionTarget.firstElementChild.style.left = (isNaN(elemLeft) ? 0 : elemLeft + e.clientX - dragPriorPosition.clientX) + 'px';
+        actionTarget.firstElementChild.style.top = (isNaN(elemTop) ? 0 : elemTop + e.clientY - dragPriorPosition.clientY) + 'px';
+        dragPriorPosition = {clientX: e.clientX, clientY: e.clientY};
+      });
+      document.addEventListener('mouseup', function(e) {
+        dragInProgress = false;
+      });
     }
   }
 
