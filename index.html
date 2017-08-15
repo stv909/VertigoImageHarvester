@@ -169,12 +169,12 @@ progress::-webkit-progress-bar-value {
   <div class="center" id="thumbnails"></div>
 </div>
 
-  <div style="position: fixed; left: 0%; margin-left: 340px; top: 100%; margin-top: -40px; background-color: transparent;">
-    <button class="action_button" style="background-position-x: 0px;"></button>
-    <button class="action_button" style="background-position-x: -38px;"></button>
-    <button class="action_button" style="background-position-x: -74px;"></button>
-    <button class="action_button" style="background-position-x: -112px;"></button>
-    <button class="action_button" style="background-position-x: -148px;"></button>
+  <div style="position: fixed; left: 0%; margin-left: 340px; top: 100%; margin-top: -50px; background-color: transparent;">
+    <button class="action_button" style="background-position-x: 0px;" onclick="on90CCW();"></button>
+    <button class="action_button" style="background-position-x: -38px;" onclick="on90CW();"></button>
+    <button class="action_button" style="background-position-x: -74px;" onclick="onFlipH();"></button>
+    <button class="action_button" style="background-position-x: -112px;" onclick="onFlipV();"></button>
+    <button class="action_button" style="background-position-x: -148px;" onclick="onBW();"></button>
   </div>
 
 <script type="text/html" id="thumbnail_template">
@@ -227,6 +227,7 @@ progress::-webkit-progress-bar-value {
 
   window.URL = window.URL ? window.URL :
                window.webkitURL ? window.webkitURL : window;
+  var actionTarget;
 
   function Tree(selector) {
     this.$el = $(selector);
@@ -340,11 +341,101 @@ progress::-webkit-progress-bar-value {
       // Render thumbnail template with the file info (data object).
       //thumbnails.insertAdjacentHTML('afterBegin', tmpl('thumbnail_template', data));
       thumbnails.innerHTML = tmpl('thumbnail_template', data);
+      actionTarget = thumbnails.firstElementChild;
     }
   }
 
   tree.$el.click(function(e){handleView(e);});
   tree.$el.keyup(function(e){if (e.keyCode !== 37 && e.keyCode !== 38 && e.keyCode !== 39 && e.keyCode !== 40) return; handleView(e);});
+
+  function getPrevs(transform)
+  {
+    var prev = actionTarget.style.transform.split('scale(')[1], prevX, prevY, prevs;
+    if (prev)
+      var prevs = prev.split(',');
+    return {
+      rotate: parseInt(transform.split('rotate(')[1]),
+      scaleX: prevs ? parseInt(prevs[0]) : undefined,
+      scaleY: prevs ? parseInt(prevs[1]) : undefined
+    };
+  }
+
+  function on90CCW()
+  {
+    if (!actionTarget)
+      return;
+    var transform1 = '', transform2 = '';
+    var prev = getPrevs(actionTarget.style.transform);
+    if (isNaN(prev.rotate))
+      transform1 = 'rotate(-90deg)';
+    else
+      transform1 = 'rotate(' + (prev.rotate - 90) + 'deg)';
+    if (!isNaN(prev.scaleX) && !isNaN(prev.scaleY))
+      transform2 = 'scale(' + prev.scaleX + ', ' + prev.scaleY + ')';
+    actionTarget.style.transform = transform1 + ' ' + transform2;
+  }
+
+  function on90CW()
+  {
+    if (!actionTarget)
+      return;
+    var transform1 = '', transform2 = '';
+    var prev = getPrevs(actionTarget.style.transform);
+    if (isNaN(prev.rotate))
+      transform1 = 'rotate(90deg)';
+    else
+      transform1 = 'rotate(' + (prev.rotate + 90) + 'deg)';
+    if (!isNaN(prev.scaleX) && !isNaN(prev.scaleY))
+      transform2 = 'scale(' + prev.scaleX + ', ' + prev.scaleY + ')';
+    actionTarget.style.transform = transform1 + ' ' + transform2;
+  }
+
+  function onFlipH()
+  {
+    if (!actionTarget)
+      return;
+    var transform1 = '', transform2 = '';
+    var prev = getPrevs(actionTarget.style.transform);
+    var needSwap = false;
+    if (!isNaN(prev.rotate))
+    {
+      transform1 = 'rotate(' + prev.rotate + 'deg)';
+      needSwap = prev.rotate % 180 !== 0;
+    }
+    if (isNaN(prev.scaleX) || isNaN(prev.scaleY))
+      transform2 = needSwap ? 'scale(1, -1)' : 'scale(-1, 1)';
+    else
+      transform2 = needSwap ? 'scale(' + prev.scaleX + ', ' + (-prev.scaleY) + ')' : 'scale(' + (-prev.scaleX) + ', ' + prev.scaleY + ')';
+    actionTarget.style.transform = transform1 + ' ' + transform2;
+  }
+
+  function onFlipV()
+  {
+    if (!actionTarget)
+      return;
+    var transform1 = '', transform2 = '';
+    var prev = getPrevs(actionTarget.style.transform);
+    var needSwap = false;
+    if (!isNaN(prev.rotate))
+    {
+      transform1 = 'rotate(' + prev.rotate + 'deg)';
+      needSwap = prev.rotate % 180 !== 0;
+    }
+    if (isNaN(prev.scaleX) || isNaN(prev.scaleY))
+      transform2 = needSwap ? 'scale(-1, 1)' : 'scale(1, -1)';
+    else
+      transform2 = needSwap ? 'scale(' + (-prev.scaleX) + ', ' + prev.scaleY + ')' : 'scale(' + prev.scaleX + ', ' + (-prev.scaleY) + ')';
+    actionTarget.style.transform = transform1 + ' ' + transform2;
+  }
+
+  function onBW()
+  {
+    if (!actionTarget.style.filter)
+      actionTarget.style.filter = 'grayscale(100%)';
+    else
+      actionTarget.style.filter = '';
+  }
+
 </script>
 </body>
 </html>
