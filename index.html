@@ -158,6 +158,14 @@
       background-repeat-x: no-repeat;
       background-repeat-y: no-repeat;
     }
+
+    .pixelated {
+        image-rendering: -moz-crisp-edges;
+        image-rendering: -o-crisp-edges;
+        image-rendering: -webkit-optimize-contrast;
+        -ms-interpolation-mode: nearest-neighbor;
+        image-rendering: pixelated;
+    }
   </style>
   </head>
 <body onresize="resizeImageAspectRation();">
@@ -174,6 +182,9 @@
     <button class="action_button" style="background-position-x: -74px;" onclick="onFlipH();"></button>
     <button class="action_button" style="background-position-x: -112px;" onclick="onFlipV();"></button>
     <button class="action_button" style="background-position-x: -148px;" onclick="onBW();"></button>
+    <button class="" onclick="onZoomIn();">+</button>
+    <button class="" onclick="onZoomOut();">-</button>
+    <button class="" onclick="onPixelate();">pixelate</button>
   </div>
   <script type="text/html" id="thumbnail_template">
     <div class="thumbnail">
@@ -355,6 +366,11 @@
         thumbnails.innerHTML = tmpl('thumbnail_template', data);
         actionTarget = thumbnails.firstElementChild;
 
+        actionTarget.firstElementChild.dataset.rotation = '0';
+        actionTarget.firstElementChild.dataset.scale = '1';
+        actionTarget.firstElementChild.dataset.flipX = '1';
+        actionTarget.firstElementChild.dataset.flipY = '1';
+
         actionTarget.onmousedown = function(e) {
           dragInProgress = true;
           dragPriorPosition = {clientX: e.clientX, clientY: e.clientY};
@@ -378,16 +394,11 @@
     tree.$el.click(function(e){handleView(e);});
     tree.$el.keyup(function(e){if (e.keyCode !== 37 && e.keyCode !== 38 && e.keyCode !== 39 && e.keyCode !== 40) return; handleView(e);});
 
-    function getPrevs(transform)
+    function updateTransforms(element)
     {
-      var prev = transform.split('scale(')[1], prevX, prevY, prevs;
-      if (prev)
-        var prevs = prev.split(',');
-      return {
-        rotate: parseInt(transform.split('rotate(')[1]),
-        scaleX: prevs ? parseInt(prevs[0]) : undefined,
-        scaleY: prevs ? parseInt(prevs[1]) : undefined
-      };
+      var d = element.dataset;
+      var s = parseFloat(d.scale);
+      element.style.transform = 'rotate(' + d.rotation + 'deg) scale(' + (parseInt(d.flipX) * s) + ',' + (parseInt(d.flipY) * s) + ')';
     }
 
     function on90CCW()
@@ -395,15 +406,8 @@
       if (!actionTarget)
         return;
       var element = actionTarget.firstElementChild;
-      var transform1 = '', transform2 = '';
-      var prev = getPrevs(element.style.transform);
-      if (isNaN(prev.rotate))
-        transform1 = 'rotate(-90deg)';
-      else
-        transform1 = 'rotate(' + (prev.rotate - 90) + 'deg)';
-      if (!isNaN(prev.scaleX) && !isNaN(prev.scaleY))
-        transform2 = 'scale(' + prev.scaleX + ', ' + prev.scaleY + ')';
-      element.style.transform = transform1 + ' ' + transform2;
+      element.dataset.rotation = (parseInt(element.dataset.rotation) - 90).toString();
+      updateTransforms(element);
     }
 
     function on90CW()
@@ -411,15 +415,8 @@
       if (!actionTarget)
         return;
       var element = actionTarget.firstElementChild;
-      var transform1 = '', transform2 = '';
-      var prev = getPrevs(element.style.transform);
-      if (isNaN(prev.rotate))
-        transform1 = 'rotate(90deg)';
-      else
-        transform1 = 'rotate(' + (prev.rotate + 90) + 'deg)';
-      if (!isNaN(prev.scaleX) && !isNaN(prev.scaleY))
-        transform2 = 'scale(' + prev.scaleX + ', ' + prev.scaleY + ')';
-      element.style.transform = transform1 + ' ' + transform2;
+      element.dataset.rotation = (parseInt(element.dataset.rotation) + 90).toString();
+      updateTransforms(element);
     }
 
     function onFlipH()
@@ -427,19 +424,15 @@
       if (!actionTarget)
         return;
       var element = actionTarget.firstElementChild;
-      var transform1 = '', transform2 = '';
-      var prev = getPrevs(element.style.transform);
-      var needSwap = false;
-      if (!isNaN(prev.rotate))
-      {
-        transform1 = 'rotate(' + prev.rotate + 'deg)';
-        needSwap = prev.rotate % 180 !== 0;
-      }
-      if (isNaN(prev.scaleX) || isNaN(prev.scaleY))
-        transform2 = needSwap ? 'scale(1, -1)' : 'scale(-1, 1)';
+      var fX = parseInt(element.dataset.flipX);
+      var fY = parseInt(element.dataset.flipY);
+      if (parseInt(element.dataset.rotation) % 180 !== 0)
+        fY = -fY;
       else
-        transform2 = needSwap ? 'scale(' + prev.scaleX + ', ' + (-prev.scaleY) + ')' : 'scale(' + (-prev.scaleX) + ', ' + prev.scaleY + ')';
-      element.style.transform = transform1 + ' ' + transform2;
+        fX = -fX;
+      element.dataset.flipX = fX.toString()
+      element.dataset.flipY = fY.toString()
+      updateTransforms(element);
     }
 
     function onFlipV()
@@ -447,19 +440,33 @@
       if (!actionTarget)
         return;
       var element = actionTarget.firstElementChild;
-      var transform1 = '', transform2 = '';
-      var prev = getPrevs(element.style.transform);
-      var needSwap = false;
-      if (!isNaN(prev.rotate))
-      {
-        transform1 = 'rotate(' + prev.rotate + 'deg)';
-        needSwap = prev.rotate % 180 !== 0;
-      }
-      if (isNaN(prev.scaleX) || isNaN(prev.scaleY))
-        transform2 = needSwap ? 'scale(-1, 1)' : 'scale(1, -1)';
+      var fX = parseInt(element.dataset.flipX);
+      var fY = parseInt(element.dataset.flipY);
+      if (parseInt(element.dataset.rotation) % 180 !== 0)
+        fX = -fX;
       else
-        transform2 = needSwap ? 'scale(' + (-prev.scaleX) + ', ' + prev.scaleY + ')' : 'scale(' + prev.scaleX + ', ' + (-prev.scaleY) + ')';
-      element.style.transform = transform1 + ' ' + transform2;
+        fY = -fY;
+      element.dataset.flipX = fX.toString()
+      element.dataset.flipY = fY.toString()
+      updateTransforms(element);
+    }
+
+    function onZoomIn()
+    {
+      if (!actionTarget)
+        return;
+      var element = actionTarget.firstElementChild;
+      element.dataset.scale = (parseFloat(element.dataset.scale)*1.4).toString();
+      updateTransforms(element);
+    }
+
+    function onZoomOut()
+    {
+      if (!actionTarget)
+        return;
+      var element = actionTarget.firstElementChild;
+      element.dataset.scale = (parseFloat(element.dataset.scale)/1.4).toString();
+      updateTransforms(element);
     }
 
     function onBW()
@@ -471,6 +478,17 @@
         element.style.filter = 'grayscale(100%)';
       else
         element.style.filter = '';
+    }
+
+    function onPixelate()
+    {
+      if (!actionTarget)
+        return;
+      var element = actionTarget.firstElementChild.firstElementChild;
+      if (element.className.indexOf('pixelated') > -1)
+        element.classList.remove('pixelated');
+      else
+        element.classList.add('pixelated');
     }
   </script>
 </body>
