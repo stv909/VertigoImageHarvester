@@ -377,6 +377,7 @@
           dragInProgress = true;
           dragPriorPosition = {clientX: e.clientX, clientY: e.clientY};
         };
+        //actionTarget.oncontextmenu = function(e) {return false;}; // use for testing ctrlKey on MacOS
         document.addEventListener('mousemove', function(e) {
           if (!dragInProgress || !actionTarget)
             return;
