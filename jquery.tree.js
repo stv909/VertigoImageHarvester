@@ -166,7 +166,7 @@ $.fn.tree = function(settings){
 						return false;
 					}	
 					//check if enter or space was pressed on a tree node
-					else if((event.keyCode == 13 || event.keyCode == 32) && target.is('a.tree-parent')){
+					else if((event.keyCode == 13) && target.is('a.tree-parent')){
 							target.trigger('toggle');
 							//return click event false because it's a tree node (folder)
 							return false;

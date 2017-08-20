@@ -237,6 +237,7 @@
     var actionTarget;
     var dragInProgress = false;
     var dragPriorPosition = {clientX: 0, clientY: 0};
+    var spaceKeyHold = false;
 
     function Tree(selector) {
       this.$el = $(selector);
@@ -378,15 +379,41 @@
         document.addEventListener('mousemove', function(e) {
           if (!dragInProgress || !actionTarget)
             return;
-          var element = actionTarget;
-          var elemLeft = parseInt(element.style.left);
-          var elemTop = parseInt(element.style.top);
-          element.style.left = (isNaN(elemLeft) ? 0 : elemLeft + e.clientX - dragPriorPosition.clientX) + 'px';
-          element.style.top = (isNaN(elemTop) ? 0 : elemTop + e.clientY - dragPriorPosition.clientY) + 'px';
-          dragPriorPosition = {clientX: e.clientX, clientY: e.clientY};
+          if (spaceKeyHold && e.altKey) // TODO: replace alt by ctrl for Windows
+          {
+            // TODO: implement zooming
+            console.log(e.clientX + ' x ' + e.clientY);
+          }
+          else
+          {
+            var element = actionTarget;
+            var elemLeft = parseInt(element.style.left);
+            var elemTop = parseInt(element.style.top);
+            element.style.left = (isNaN(elemLeft) ? 0 : elemLeft + e.clientX - dragPriorPosition.clientX) + 'px';
+            element.style.top = (isNaN(elemTop) ? 0 : elemTop + e.clientY - dragPriorPosition.clientY) + 'px';
+            dragPriorPosition = {clientX: e.clientX, clientY: e.clientY};
+          }
         });
         document.addEventListener('mouseup', function(e) {
           dragInProgress = false;
+        });
+        document.addEventListener('keydown', function(e) {
+          if (e.code === 'Space')
+          {
+            if (e.preventDefault)
+              e.preventDefault();
+            e.returnValue = false;
+            spaceKeyHold = true;
+          }
+        });
+        document.addEventListener('keyup', function(e) {
+          if (e.code === 'Space')
+          {
+            if (e.preventDefault)
+              e.preventDefault();
+            e.returnValue = false;
+            spaceKeyHold = false;
+          }
         });
       }
     }
