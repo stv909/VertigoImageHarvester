@@ -107,6 +107,7 @@
       -webkit-transition-timing-function: ease-in-out;
       opacity: 0;
       position: relative;
+      user-select: none;
     }
     .action_layer {
       /*float:left;*/
@@ -379,10 +380,14 @@
         document.addEventListener('mousemove', function(e) {
           if (!dragInProgress || !actionTarget)
             return;
-          if (spaceKeyHold && e.altKey) // TODO: replace alt by ctrl for Windows
+          if (spaceKeyHold && e.altKey) // TODO: replace alt by ctrl for Windows // use altKey for MacOS tests
           {
-            // TODO: implement zooming
-            console.log(e.clientX + ' x ' + e.clientY);
+            var element = actionTarget.firstElementChild;
+            var zoomScale = 0.01;
+            var delta = e.clientX - dragPriorPosition.clientX;
+            var z = Math.pow(1 + zoomScale, delta);
+            element.dataset.scale = (parseFloat(element.dataset.scale)*z).toString();
+            updateTransforms(element);
           }
           else
           {
@@ -391,8 +396,8 @@
             var elemTop = parseInt(element.style.top);
             element.style.left = (isNaN(elemLeft) ? 0 : elemLeft + e.clientX - dragPriorPosition.clientX) + 'px';
             element.style.top = (isNaN(elemTop) ? 0 : elemTop + e.clientY - dragPriorPosition.clientY) + 'px';
-            dragPriorPosition = {clientX: e.clientX, clientY: e.clientY};
           }
+          dragPriorPosition = {clientX: e.clientX, clientY: e.clientY};
         });
         document.addEventListener('mouseup', function(e) {
           dragInProgress = false;
