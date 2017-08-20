@@ -380,7 +380,7 @@
         document.addEventListener('mousemove', function(e) {
           if (!dragInProgress || !actionTarget)
             return;
-          if (spaceKeyHold && e.altKey) // TODO: replace alt by ctrl for Windows // use altKey for MacOS tests
+          if (spaceKeyHold && e.ctrlKey) // use altKey for MacOS tests
           {
             var element = actionTarget.firstElementChild;
             var zoomScale = 0.01;
