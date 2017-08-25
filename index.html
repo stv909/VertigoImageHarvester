@@ -99,18 +99,13 @@
       -webkit-box-shadow: inset 0 0 15px #000;
     }
     .thumbnail {
-      /*float:left;*/
       text-align: center;
       width: 100%;
-      -webkit-transition-property: opacity, -webkit-transform;
-      -webkit-transition-duration: 0.6s, 0.2s;
-      -webkit-transition-timing-function: ease-in-out;
       opacity: 0;
       position: relative;
       user-select: none;
     }
-    .action_layer {
-      /*float:left;*/
+    .action_layer.animated {
       -webkit-transition-property: opacity, -webkit-transform;
       -webkit-transition-duration: 0.6s, 0.2s;
       -webkit-transition-timing-function: ease-in-out;
@@ -126,8 +121,10 @@
     }
     #thumbnails img {
       width: 100%;
-      user-drag: none;
+      -moz-user-drag: none;
+      -o-user-drag: none;
       -webkit-user-drag: none;
+      user-drag: none;
       left: 0px;
       top: 0px;
     }
@@ -198,7 +195,7 @@
     }
 
     .BnW {
-      background: url(./img/BnW.svg) no-repeat top left;
+      background-image: url(./img/BnW.svg);
     }
 
     .pixelated {
@@ -219,8 +216,8 @@
     <div class="center" id="thumbnails"></div>
   </div>
   <div style="position: fixed; left: 0%; margin-left: 340px; top: 100%; margin-top: -64px; background-color: transparent;">
-    <button class="action_button icons Rotate_R_90" onclick="on90CCW();"></button>
-    <button class="action_button icons Rotate_L_90" onclick="on90CW();"></button>
+    <button class="action_button icons Rotate_L_90" onclick="on90CCW();"></button>
+    <button class="action_button icons Rotate_R_90" onclick="on90CW();"></button>
     <button class="action_button Flip_Horizontal" onclick="onFlipH();"></button>
     <button class="action_button Flip_Vertical" onclick="onFlipV();"></button>
     <button class="action_button BnW" onclick="onBW();"></button>
@@ -230,7 +227,7 @@
   </div>
   <script type="text/html" id="thumbnail_template">
     <div class="thumbnail">
-      <div class="action_layer">
+      <div class="action_layer animated">
         <img class="shadow" src="<%= file.src %>" alt="<%= file.name %>" title="<%= file.name %>" onload="revokeFileURL()" />
       </div>
     </div>
@@ -418,11 +415,11 @@
           dragInProgress = true;
           dragPriorPosition = {clientX: e.clientX, clientY: e.clientY};
         };
-        //actionTarget.oncontextmenu = function(e) {return false;}; // use for testing ctrlKey on MacOS
+        actionTarget.oncontextmenu = function(e) {return false;}; // use for MacOS tests
         document.addEventListener('mousemove', function(e) {
           if (!dragInProgress || !actionTarget)
             return;
-          if (spaceKeyHold && e.ctrlKey) // use altKey for MacOS tests
+          if (spaceKeyHold && e.ctrlKey)
           {
             var element = actionTarget.firstElementChild;
             var zoomScale = 0.01;
@@ -451,6 +448,7 @@
               e.preventDefault();
             e.returnValue = false;
             spaceKeyHold = true;
+            document.getElementsByClassName('action_layer')[0].classList.remove('animated');
           }
         });
         document.addEventListener('keyup', function(e) {
@@ -460,6 +458,7 @@
               e.preventDefault();
             e.returnValue = false;
             spaceKeyHold = false;
+            document.getElementsByClassName('action_layer')[0].classList.add('animated');
           }
         });
       }
