@@ -417,10 +417,12 @@
         };
         actionTarget.oncontextmenu = function(e) {return false;}; // use for MacOS tests
         document.addEventListener('mousemove', function(e) {
+          document.getElementById('thumbnails').firstElementChild.firstElementChild.classList.add('animated');
           if (!dragInProgress || !actionTarget)
             return;
           if (spaceKeyHold && e.ctrlKey)
           {
+            document.getElementById('thumbnails').firstElementChild.firstElementChild.classList.remove('animated');
             var element = actionTarget.firstElementChild;
             var zoomScale = 0.01;
             var delta = e.clientX - dragPriorPosition.clientX;
@@ -448,7 +450,6 @@
               e.preventDefault();
             e.returnValue = false;
             spaceKeyHold = true;
-            document.getElementsByClassName('action_layer')[0].classList.remove('animated');
           }
         });
         document.addEventListener('keyup', function(e) {
@@ -458,7 +459,6 @@
               e.preventDefault();
             e.returnValue = false;
             spaceKeyHold = false;
-            document.getElementsByClassName('action_layer')[0].classList.add('animated');
           }
         });
       }
