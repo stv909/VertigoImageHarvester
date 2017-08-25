@@ -6,12 +6,13 @@
    xmlns="http://www.w3.org/2000/svg"
    width="512"
    height="512"
+   viewBox="14 14 108 108"
    version="1.1">
   <g
      id="layer1"
      transform="translate(0,-161.53332)">
     <path
-       style="fill:#040000;fill-opacity:1;stroke-width:0.99999994"
+       style="fill:#000000;fill-opacity:1;stroke:none;stroke-width:1;stroke-opacity:1"
        d="M 256 90 A 165.99999 165.99999 0 0 0 90 256 A 165.99999 165.99999 0 0 0 256 422 A 165.99999 165.99999 0 0 0 422 256 A 165.99999 165.99999 0 0 0 256 90 z M 256 130 L 256 382 A 125.99999 125.99999 0 0 1 130 256 A 125.99999 125.99999 0 0 1 256 130 z "
        transform="matrix(0.26458333,0,0,0.26458333,0,161.53332)"
        id="path40" />
