@@ -150,14 +150,55 @@
       background-color: #99ccff;
     }
 
-    .action_button {
-      border: 1px solid #000;
-      border-radius: 4px;
-      width: 32px;
-      height: 32px;
-      background-image: url(action_icons.png);
+    button.action_button {
+      border: 3px solid #000;
+      border-radius: 8px;
+      padding: 0;
+      background-size: contain;
       background-repeat-x: no-repeat;
       background-repeat-y: no-repeat;
+      background-position-x: left;
+      background-position-y: top;
+      cursor: pointer;
+      display: inline-block;
+      height: 48px;
+      width: 48px;
+    }
+
+    .Flip_Horizontal {
+      background-image: url(./img/Flip_Horizontal.svg) 
+    }
+
+    .Flip_Vertical {
+      background-image: url(./img/Flip_Vertical.svg);
+    }
+
+    .Rotate_L_90 {
+      background-image: url(./img/Rotate_L_90.svg);
+    }
+
+    .Rotate_R_90 {
+      background-image: url(./img/Rotate_R_90.svg);
+    }
+
+    .Zoom_In {
+      background-image: url(./img/Zoom_In.svg);
+    }
+
+    .Zoom_Out {
+      background-image: url(./img/Zoom_Out.svg);
+    }
+
+    .AA_on {
+      background-image: url(./img/AA_on.svg);
+    }
+
+    .AA_off {
+      background-image: url(./img/AA_off.svg);
+    }
+
+    .BnW {
+      background: url(./img/BnW.svg) no-repeat top left;
     }
 
     .pixelated {
@@ -177,15 +218,15 @@
     </div>
     <div class="center" id="thumbnails"></div>
   </div>
-  <div style="position: fixed; left: 0%; margin-left: 340px; top: 100%; margin-top: -50px; background-color: transparent;">
-    <button class="action_button" style="background-position-x: 0px;" onclick="on90CCW();"></button>
-    <button class="action_button" style="background-position-x: -38px;" onclick="on90CW();"></button>
-    <button class="action_button" style="background-position-x: -74px;" onclick="onFlipH();"></button>
-    <button class="action_button" style="background-position-x: -112px;" onclick="onFlipV();"></button>
-    <button class="action_button" style="background-position-x: -148px;" onclick="onBW();"></button>
-    <button class="" onclick="onZoomIn();">+</button>
-    <button class="" onclick="onZoomOut();">-</button>
-    <button class="" onclick="onPixelate();">pixelate</button>
+  <div style="position: fixed; left: 0%; margin-left: 340px; top: 100%; margin-top: -64px; background-color: transparent;">
+    <button class="action_button icons Rotate_R_90" onclick="on90CCW();"></button>
+    <button class="action_button icons Rotate_L_90" onclick="on90CW();"></button>
+    <button class="action_button Flip_Horizontal" onclick="onFlipH();"></button>
+    <button class="action_button Flip_Vertical" onclick="onFlipV();"></button>
+    <button class="action_button BnW" onclick="onBW();"></button>
+    <button class="action_button Zoom_In" onclick="onZoomIn();"></button>
+    <button class="action_button Zoom_Out" onclick="onZoomOut();"></button>
+    <button class="action_button AA_off" onclick="onPixelate();"></button>
   </div>
   <script type="text/html" id="thumbnail_template">
     <div class="thumbnail">
