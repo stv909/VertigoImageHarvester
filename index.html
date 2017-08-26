@@ -20,63 +20,47 @@
 <head>
   <meta charset=utf-8 />
   <link rel="stylesheet" type="text/css" href="enhanced.css" />
-  <!--<link rel="stylesheet" type="text/css" href="http://fonts.googleapis.com/css?family=Molengo|Josefin+Sans+Std+Light" />-->
   <style>
     html, body {
       padding: 0;
       margin: 0;
       height: 100%;
-      width: 100%;
-      overflow: hidden;
     }
-    .linear {
-      background: -webkit-gradient(linear, left bottom, left top,
-                                   from(#eee), color-stop(0.25, #fff),
-                                   to(#eee), color-stop(0.75, #fff));
-    }
+
     .shadow {
-      -moz-box-shadow: 3px 3px 10px #666666;
-      -webkit-box-shadow: 3px 3px 10px #666666;
-      box-shadow: 3px 3px 10px #666666;
+      box-shadow: 0px 0px 12px 3px rgba(0,0,0,0.5);
     }
+
     .center {
-      display : -webkit-box;
-      display : -moz-box;
-      display : box;
-      -webkit-box-orient : vertical;
-      -webkit-box-pack : center;
-      -webkit-box-align : center;
-      -moz-box-orient : vertical;
-      -moz-box-pack : center;
-      -moz-box-align : center;
+      display: -webkit-box;
+      display: -moz-box;
+      display: box;
+      /*-------------------------*/
+      -webkit-box-orient: vertical;
+      -webkit-box-pack: center;
+      -webkit-box-align: center;
+
+      -moz-box-orient: vertical;
+      -moz-box-pack: center;
+      -moz-box-align: center;
+
       box-orient: vertical;
       box-pack: center;
       box-align: center;
     }
-    ::-webkit-scrollbar {
-      width: 12px;
-      height: 12px;
-      background-color: #eee;
-    }
 
-    ::-webkit-scrollbar-thumb {
-      background-color: rgba(0,0,0, 0.4);
-      border-radius: 5px;
-    }
-
-    ::-webkit-scrollbar-thumb:hover {
-      background-color: rgba(0,0,0, 0.6);
-    }
-    input[type='file'] {
-      border: 2px solid #eee;
-      border-radius: 10px;
-      padding: 8px;
-      width: 93%;
-    }
     #container {
       display: -webkit-box;
+      display: -moz-box;
+      display: box;
+      /*-------------------------*/
       -webkit-box-orient: horizontal;
-      height: 100%;
+
+      -moz-box-orient: horizontal;
+
+      box-orient: horizontal;
+      /*-------------------------*/
+      height: 86%;
     }
     #container > div {
       padding: 10px;
@@ -84,67 +68,57 @@
     #container > div:first-of-type {
       overflow-y: auto;
       overflow-x: hidden;
-      width: 300px;
-      border-right: 1px solid #ccc;
+      width: 256px;
     }
     #container > div:last-of-type {
      overflow-y: hidden;
      overflow-x: hidden;
      -webkit-box-flex: 1;
     }
-    #thumbnails {
-      background: -webkit-gradient(linear, left bottom, left top,
-                                   from(#ccc), color-stop(0.25, #eee),
-                                   to(#ccc), color-stop(0.75, #eee));
-      -webkit-box-shadow: inset 0 0 15px #000;
-    }
+
     .thumbnail {
       text-align: center;
       width: 100%;
-      opacity: 0;
       position: relative;
       user-select: none;
     }
+
     .action_layer.animated {
-      -webkit-transition-property: opacity, -webkit-transform;
-      -webkit-transition-duration: 0.6s, 0.2s;
-      -webkit-transition-timing-function: ease-in-out;
+      transition-property: transform;
+      transition-duration: 0.6s, 0.2s;
+      transition-timing-function: ease-in-out;
     }
-    .thumbnail .title {
-      margin-bottom: 5px;
-      font-family: Helvetica, sans-serif;
-      overflow: hidden;
-      text-overflow: ellipsis;
-      white-space: nowrap;
-      width: 300px;
-      margin: 5px auto;
-    }
+
     #thumbnails img {
       width: 100%;
+
       -moz-user-drag: none;
       -o-user-drag: none;
       -webkit-user-drag: none;
       user-drag: none;
+
       left: 0px;
       top: 0px;
     }
-    .thumbnail .details {
-      font-family: Helvetica, sans-serif;
-      font-size: 10pt;
+
+    ::-webkit-scrollbar {
+      width: 12px;
+      height: 12px;
+      background-color: #eee;
     }
-    #progress_bar {
-      display: none;
+    ::-webkit-scrollbar-thumb {
+      background-color: rgba(0,0,0, 0.4);
+      border-radius: 5px;
     }
-    progress {
-      background-color: black;
-      margin: 10px 0;
-      padding: 1px;
-      border: 1px solid #000;
-      font-size: 14px;
-      width: auto;
+    ::-webkit-scrollbar-thumb:hover {
+      background-color: rgba(0,0,0, 0.6);
     }
-    progress::-webkit-progress-bar-value {
-      background-color: #99ccff;
+
+    input[type='file'] {
+      border: 2px solid #eee;
+      border-radius: 10px;
+      padding: 8px;
+      width: 93%;
     }
 
     button.action_button {
@@ -161,39 +135,30 @@
       height: 48px;
       width: 48px;
     }
-
     .Flip_Horizontal {
       background-image: url(./img/Flip_Horizontal.svg) 
     }
-
     .Flip_Vertical {
       background-image: url(./img/Flip_Vertical.svg);
     }
-
     .Rotate_L_90 {
       background-image: url(./img/Rotate_L_90.svg);
     }
-
     .Rotate_R_90 {
       background-image: url(./img/Rotate_R_90.svg);
     }
-
     .Zoom_In {
       background-image: url(./img/Zoom_In.svg);
     }
-
     .Zoom_Out {
       background-image: url(./img/Zoom_Out.svg);
     }
-
     .AA_on {
       background-image: url(./img/AA_on.svg);
     }
-
     .AA_off {
       background-image: url(./img/AA_off.svg);
     }
-
     .BnW {
       background-image: url(./img/BnW.svg);
     }
@@ -205,6 +170,11 @@
         -ms-interpolation-mode: nearest-neighbor;
         image-rendering: pixelated;
     }
+
+    .filmstrip {
+      border-top: 1px solid #ccc;
+      height: 14%;
+    }
   </style>
   </head>
 <body onresize="resizeImageAspectRation();">
@@ -215,7 +185,8 @@
     </div>
     <div class="center" id="thumbnails"></div>
   </div>
-  <div style="position: fixed; left: 0%; margin-left: 340px; top: 100%; margin-top: -64px; background-color: transparent;">
+  <div class="filmstrip"></div>
+  <div style="position: absolute; left: 0%; margin-left: 286px; top: 86%; margin-top: -58px; background-color: transparent;">
     <button class="action_button icons Rotate_L_90" onclick="on90CCW();"></button>
     <button class="action_button icons Rotate_R_90" onclick="on90CW();"></button>
     <button class="action_button Flip_Horizontal" onclick="onFlipH();"></button>
@@ -369,9 +340,6 @@
 
     function revokeFileURL(e) {
       var thumb = document.querySelector('.thumbnail');
-      if (thumb) {
-        thumb.style.opacity = 1;
-      }
       window.URL.revokeObjectURL(this.src);
       refreshImageAspectRation();
     };
@@ -387,13 +355,7 @@
           return;
         }
 
-        thumbnails.innerHTML = '<h3>Loading...</h3>';
-
         var thumb = document.querySelector('.thumbnail');
-        if (thumb) {
-          thumb.style.opacity = 0;
-        }
-
         var data = {
           'file': {
             'name': file.name,
@@ -401,8 +363,6 @@
           }
         };
 
-        // Render thumbnail template with the file info (data object).
-        //thumbnails.insertAdjacentHTML('afterBegin', tmpl('thumbnail_template', data));
         thumbnails.innerHTML = tmpl('thumbnail_template', data);
         actionTarget = thumbnails.firstElementChild;
 
