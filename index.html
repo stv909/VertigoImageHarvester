@@ -185,7 +185,9 @@
     </div>
     <div class="center" id="thumbnails"></div>
   </div>
-  <div class="filmstrip"></div>
+  <div class="filmstrip">
+    <canvas id="testCanvas" style="width: 100%; height: 100%;"></canvas>
+  </div>
   <div style="position: absolute; left: 0%; margin-left: 286px; top: 86%; margin-top: -58px; background-color: transparent;">
     <button class="action_button icons Rotate_L_90" onclick="on90CCW();"></button>
     <button class="action_button icons Rotate_R_90" onclick="on90CW();"></button>
@@ -317,6 +319,53 @@
 
     $('#file_input').change(tree.init);
 
+    function testCanvas() // call it from console
+    {
+      function resizeImage(canvas, url, offestX, offsetY, width, height) {
+        var sourceImage = new Image();
+
+        sourceImage.onload = function (e) {
+          var context = canvas.getContext('2d');
+          // TODO: make thumb image smooth
+          /*
+          // this does not work
+          context.mozImageSmoothingEnabled = true;
+          context.webkitImageSmoothingEnabled = true;
+          context.msImageSmoothingEnabled = true;
+          context.imageSmoothingEnabled = true;
+          */
+
+          if (sourceImage.width == sourceImage.height)
+            context.drawImage(sourceImage, offestX, offsetY, width, height);
+          else 
+          {
+            minVal = Math.min(sourceImage.width, sourceImage.height);
+            if (sourceImage.width > sourceImage.height)
+              context.drawImage(sourceImage, (sourceImage.width - minVal) / 2, 0, minVal, minVal, offestX, offsetY, width, height);
+            else
+              context.drawImage(sourceImage, 0, (sourceImage.height - minVal) / 2, minVal, minVal, offestX, offsetY, width, height);
+          }
+        };
+
+        sourceImage.src = url;
+      }
+
+      var imageSource = document.getElementById('thumbnails').firstElementChild.firstElementChild;
+      if (imageSource)
+      {
+        var canvas = document.getElementById('testCanvas');
+        canvas.width = canvas.clientWidth;
+        canvas.height = canvas.clientHeight;
+        console.log(canvas.width + ' x ' + canvas.height);
+        var n = Math.floor(canvas.width / canvas.height) + 1;
+        for (var i = 0; i < n; i++)
+          resizeImage(canvas, imageSource.firstElementChild.src, i * canvas.height, 0, canvas.height, canvas.height);
+      }
+      else
+        console.log('no image for thumb avalable');
+      // TODO: implement efficient canvas scrolling
+    }
+
     function refreshImageAspectRation()
     {
       if (!actionTarget)
@@ -377,12 +426,15 @@
         };
         actionTarget.oncontextmenu = function(e) {return false;}; // use for MacOS tests
         document.addEventListener('mousemove', function(e) {
-          document.getElementById('thumbnails').firstElementChild.firstElementChild.classList.add('animated');
+          var imageSource = document.getElementById('thumbnails').firstElementChild.firstElementChild;
+          if (imageSource)
+            imageSource.classList.add('animated');
           if (!dragInProgress || !actionTarget)
             return;
           if (spaceKeyHold && e.ctrlKey)
           {
-            document.getElementById('thumbnails').firstElementChild.firstElementChild.classList.remove('animated');
+            if (imageSource)
+              imageSource.classList.remove('animated');
             var element = actionTarget.firstElementChild;
             var zoomScale = 0.01;
             var delta = e.clientX - dragPriorPosition.clientX;
