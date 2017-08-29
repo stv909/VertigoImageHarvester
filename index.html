@@ -364,7 +364,7 @@
       var thumbLeftOffset = 0.5 * canvas.width - (leftRightThumbsCount + 0.5) * canvas.height;
       var max_i = tree.fileList.length;
 
-      // TODO: skip non-images
+      // TODO: skip non-images - may be even on the file tree level
       for (var i = thumbMinIndex; i <= thumbMaxIndex; ++i)
       {
         var file = i >= 0 && i < max_i ? tree.fileList[i] : undefined;
@@ -374,6 +374,7 @@
           canvas.getContext('2d').clearRect(thumbLeftOffset, 0, canvas.height, canvas.height);
         thumbLeftOffset += canvas.height;
       }
+      // TODO: optimize multiple filmstrip drawing - prevent slowing down of web app
       // TODO: implement efficient canvas redraw - using prior rendered actual thumbs with neccesary offset
     }
 
