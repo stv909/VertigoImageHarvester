@@ -353,12 +353,6 @@
       canvas.width = canvas.clientWidth;
       canvas.height = canvas.clientHeight;
 
-      if (actualIndex === undefined)
-      {
-        canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
-        return;
-      }
-
       var leftRightAdditionalWidth = canvas.width > canvas.height
         ? 0.5 * (canvas.width - canvas.height)
         : 0.0;
@@ -373,8 +367,11 @@
       // TODO: skip non-images
       for (var i = thumbMinIndex; i <= thumbMaxIndex; ++i)
       {
-        if (i >= 0 && i < max_i)
-          resizeImage(canvas, window.URL.createObjectURL(tree.fileList[i]), thumbLeftOffset, 0, canvas.height, canvas.height);
+        var file = i >= 0 && i < max_i ? tree.fileList[i] : undefined;
+        if (file && file.type.match(/image.*/))
+          resizeImage(canvas, window.URL.createObjectURL(file), thumbLeftOffset, 0, canvas.height, canvas.height);
+        else
+          canvas.getContext('2d').clearRect(thumbLeftOffset, 0, canvas.height, canvas.height);
         thumbLeftOffset += canvas.height;
       }
       // TODO: implement efficient canvas redraw - using prior rendered actual thumbs with neccesary offset
@@ -414,82 +411,80 @@
 
         var thumbnails = document.querySelector('#thumbnails');
 
-        if (!file.type.match(/image.*/)) {
+        if (!file.type.match(/image.*/))
           thumbnails.innerHTML = '<h3>Please select an image!</h3>';
-          testCanvas();
-          return;
-        }
+        else
+        {
+          var thumb = document.querySelector('.thumbnail');
+          var data = {
+            'file': {
+              'name': file.name,
+              'src': window.URL.createObjectURL(file)
+            }
+          };
 
-        var thumb = document.querySelector('.thumbnail');
-        var data = {
-          'file': {
-            'name': file.name,
-            'src': window.URL.createObjectURL(file)
-          }
-        };
+          thumbnails.innerHTML = tmpl('thumbnail_template', data);
+          actionTarget = thumbnails.firstElementChild;
 
-        thumbnails.innerHTML = tmpl('thumbnail_template', data);
-        actionTarget = thumbnails.firstElementChild;
+          actionTarget.firstElementChild.dataset.rotation = '0';
+          actionTarget.firstElementChild.dataset.scale = '1';
+          actionTarget.firstElementChild.dataset.flipX = '1';
+          actionTarget.firstElementChild.dataset.flipY = '1';
 
-        actionTarget.firstElementChild.dataset.rotation = '0';
-        actionTarget.firstElementChild.dataset.scale = '1';
-        actionTarget.firstElementChild.dataset.flipX = '1';
-        actionTarget.firstElementChild.dataset.flipY = '1';
-
-        actionTarget.onmousedown = function(e) {
-          dragInProgress = true;
-          dragPriorPosition = {clientX: e.clientX, clientY: e.clientY};
-        };
-        actionTarget.oncontextmenu = function(e) {return false;}; // use for MacOS tests
-        document.addEventListener('mousemove', function(e) {
-          var imageSource = document.getElementById('thumbnails').firstElementChild.firstElementChild;
-          if (imageSource)
-            imageSource.classList.add('animated');
-          if (!dragInProgress || !actionTarget)
-            return;
-          if (spaceKeyHold && e.ctrlKey)
-          {
+          actionTarget.onmousedown = function(e) {
+            dragInProgress = true;
+            dragPriorPosition = {clientX: e.clientX, clientY: e.clientY};
+          };
+          actionTarget.oncontextmenu = function(e) {return false;}; // use for MacOS tests
+          document.addEventListener('mousemove', function(e) {
+            var imageSource = document.getElementById('thumbnails').firstElementChild.firstElementChild;
             if (imageSource)
-              imageSource.classList.remove('animated');
-            var element = actionTarget.firstElementChild;
-            var zoomScale = 0.01;
-            var delta = e.clientX - dragPriorPosition.clientX;
-            var z = Math.pow(1 + zoomScale, delta);
-            element.dataset.scale = (parseFloat(element.dataset.scale)*z).toString();
-            updateTransforms(element);
-          }
-          else
-          {
-            var element = actionTarget;
-            var elemLeft = parseInt(element.style.left);
-            var elemTop = parseInt(element.style.top);
-            element.style.left = (isNaN(elemLeft) ? 0 : elemLeft + e.clientX - dragPriorPosition.clientX) + 'px';
-            element.style.top = (isNaN(elemTop) ? 0 : elemTop + e.clientY - dragPriorPosition.clientY) + 'px';
-          }
-          dragPriorPosition = {clientX: e.clientX, clientY: e.clientY};
-        });
-        document.addEventListener('mouseup', function(e) {
-          dragInProgress = false;
-        });
-        document.addEventListener('keydown', function(e) {
-          if (e.code === 'Space')
-          {
-            if (e.preventDefault)
-              e.preventDefault();
-            e.returnValue = false;
-            spaceKeyHold = true;
-          }
-        });
-        document.addEventListener('keyup', function(e) {
-          if (e.code === 'Space')
-          {
-            if (e.preventDefault)
-              e.preventDefault();
-            e.returnValue = false;
-            spaceKeyHold = false;
-          }
-        });
-
+              imageSource.classList.add('animated');
+            if (!dragInProgress || !actionTarget)
+              return;
+            if (spaceKeyHold && e.ctrlKey)
+            {
+              if (imageSource)
+                imageSource.classList.remove('animated');
+              var element = actionTarget.firstElementChild;
+              var zoomScale = 0.01;
+              var delta = e.clientX - dragPriorPosition.clientX;
+              var z = Math.pow(1 + zoomScale, delta);
+              element.dataset.scale = (parseFloat(element.dataset.scale)*z).toString();
+              updateTransforms(element);
+            }
+            else
+            {
+              var element = actionTarget;
+              var elemLeft = parseInt(element.style.left);
+              var elemTop = parseInt(element.style.top);
+              element.style.left = (isNaN(elemLeft) ? 0 : elemLeft + e.clientX - dragPriorPosition.clientX) + 'px';
+              element.style.top = (isNaN(elemTop) ? 0 : elemTop + e.clientY - dragPriorPosition.clientY) + 'px';
+            }
+            dragPriorPosition = {clientX: e.clientX, clientY: e.clientY};
+          });
+          document.addEventListener('mouseup', function(e) {
+            dragInProgress = false;
+          });
+          document.addEventListener('keydown', function(e) {
+            if (e.code === 'Space')
+            {
+              if (e.preventDefault)
+                e.preventDefault();
+              e.returnValue = false;
+              spaceKeyHold = true;
+            }
+          });
+          document.addEventListener('keyup', function(e) {
+            if (e.code === 'Space')
+            {
+              if (e.preventDefault)
+                e.preventDefault();
+              e.returnValue = false;
+              spaceKeyHold = false;
+            }
+          });
+        }
         testCanvas(actualIndex);
       }
     }
