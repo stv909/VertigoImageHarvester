@@ -318,7 +318,7 @@
 
     $('#file_input').change(tree.init);
 
-    function testCanvas() // call it from console
+    function testCanvas(actualIndex) // call it from console
     {
       function resizeImage(canvas, url, offestX, offsetY, width, height) {
         var sourceImage = new Image();
@@ -352,18 +352,32 @@
       var canvas = document.getElementById('testCanvas');
       canvas.width = canvas.clientWidth;
       canvas.height = canvas.clientHeight;
-      var imageSource = document.getElementById('thumbnails').firstElementChild.firstElementChild;
-      if (imageSource)
-      {
-        var n = Math.floor(canvas.width / canvas.height) + 1;
-        for (var i = 0; i < n; i++)
-          resizeImage(canvas, imageSource.firstElementChild.src, i * canvas.height, 0, canvas.height, canvas.height);
-      }
-      else
+
+      if (actualIndex === undefined)
       {
         canvas.getContext('2d').clearRect(0, 0, canvas.width, canvas.height);
+        return;
       }
-      // TODO: implement efficient canvas scrolling
+
+      var leftRightAdditionalWidth = canvas.width > canvas.height
+        ? 0.5 * (canvas.width - canvas.height)
+        : 0.0;
+      var leftRightThumbsCount = leftRightAdditionalWidth
+        ? Math.floor(leftRightAdditionalWidth / canvas.height) + 1
+        : 0;
+      var thumbMinIndex = actualIndex - leftRightThumbsCount;
+      var thumbMaxIndex = actualIndex + leftRightThumbsCount;
+      var thumbLeftOffset = 0.5 * canvas.width - (leftRightThumbsCount + 0.5) * canvas.height;
+      var max_i = tree.fileList.length;
+
+      // TODO: skip non-images
+      for (var i = thumbMinIndex; i <= thumbMaxIndex; ++i)
+      {
+        if (i >= 0 && i < max_i)
+          resizeImage(canvas, window.URL.createObjectURL(tree.fileList[i]), thumbLeftOffset, 0, canvas.height, canvas.height);
+        thumbLeftOffset += canvas.height;
+      }
+      // TODO: implement efficient canvas redraw - using prior rendered actual thumbs with neccesary offset
     }
 
     function refreshImageAspectRation()
@@ -395,7 +409,8 @@
 
     function handleView(e) {
       if (e.target.nodeName == 'A' && e.target.dataset['type'] == 'file') {
-        var file = tree.fileList[e.target.dataset['index']];
+        var actualIndex = e.target.dataset['index'];
+        var file = tree.fileList[actualIndex];
 
         var thumbnails = document.querySelector('#thumbnails');
 
@@ -475,7 +490,7 @@
           }
         });
 
-        testCanvas();
+        testCanvas(actualIndex);
       }
     }
 
